@@ -13,9 +13,9 @@ type consistentHash struct {
 }
 
 type Ring interface {
-	AddNode(Id int)
-	GetNode(Id int) *Node
-	DeleteNode(id int) error
+	AddNode(Id string)
+	GetNode(Id string) *Node
+	DeleteNode(id string) error
 }
 
 func NewRing(Hasher hash.Hasher, VirtualNodes int) *consistentHash {
@@ -26,12 +26,15 @@ func NewRing(Hasher hash.Hasher, VirtualNodes int) *consistentHash {
 	}
 }
 
-func (r *consistentHash) AddNode(id int) {
-	// se añade la cantidad de nodos segund los nodos virtuales
+func (r *consistentHash) AddNode(id string) {
+
+	// por cada iteracion se guarda un nodo virtual con un hash diferente debido a su virtual id
 	for i := 0; i < r.virtualNodes; i++ {
-		Node := NewNode(r.Hasher, id)
+		Node := NewVirtualNode(r.Hasher, id, i)
 		r.Nodes = append(r.Nodes, Node)
 	}
+
+	// sort para busqueda binaria al momento de ingresar un registro y buscar el nodo cercano
 	sort.Sort(r.Nodes)
 }
 
