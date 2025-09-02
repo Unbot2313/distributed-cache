@@ -17,9 +17,10 @@ type Ring interface {
 	AddNode(Id string)
 	GetNode(Id string) *Node
 	DeleteNode(id string) error
+	redistribute()
 }
 
-func NewRing(Hasher hash.Hasher, VirtualNodes int) *consistentHash {
+func NewRing(Hasher hash.Hasher, VirtualNodes int) Ring {
 	return &consistentHash{
 		Nodes:      Nodes{},
 		Hasher:    Hasher,
@@ -53,3 +54,13 @@ func (r *consistentHash) GetNode(key string) *Node {
 	return r.Nodes[idx]
 }
 
+func (r *consistentHash) DeleteNode(id string) error {
+
+	// funcion de redistribucion
+	
+
+	
+	return nil
+}
+
+func (r *consistentHash) redistribute() {}

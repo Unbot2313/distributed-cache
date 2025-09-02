@@ -6,14 +6,14 @@ import (
 
 type Hasher interface {
     Hash(key string) uint32
-    HashWithSeed(key int, seed uint64) uint32
+    HashWithSeed(key string, seed uint64) uint32
 }
 
 // struct para interface
 type XXH3Hasher struct{}
 
 // Constructor
-func NewXXH3Hasher() *XXH3Hasher {
+func NewXXH3Hasher() Hasher {
     return &XXH3Hasher{}
 }
 
