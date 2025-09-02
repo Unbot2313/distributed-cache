@@ -6,6 +6,7 @@ import (
 	"github.com/unbot2313/distributed-cache/pkg/hash"
 )
 
+// en lugar de nodos se podria implementar un arbol binario pero no encontre diferencias en su Big(O)
 type consistentHash struct {
 	Nodes Nodes
 	Hasher hash.Hasher
@@ -36,5 +37,19 @@ func (r *consistentHash) AddNode(id string) {
 
 	// sort para busqueda binaria al momento de ingresar un registro y buscar el nodo cercano
 	sort.Sort(r.Nodes)
+}
+
+func (r *consistentHash) GetNode(key string) *Node {
+	hash := r.Hasher.Hash(key)
+	// sort devuelve el valor maximo posible osea 2**32 que es el numero maximo del hash en caso de no encontrar nada
+	idx := sort.Search(len(r.Nodes), func(i int) bool {
+		return r.Nodes[i].HashId >= hash
+	})
+	// si no hay un nodo con valor superior para seguir el orden de reloj voy al primero
+	if idx == len(r.Nodes) {
+		idx = 0
+	}
+
+	return r.Nodes[idx]
 }
 
