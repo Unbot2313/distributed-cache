@@ -62,3 +62,28 @@ func TestHashWithSeed(t *testing.T) {
         t.Errorf("Hash con misma key y semilla deberia dar igual, no fue deterministico: %d != %d", hash1, hash3)
     }
 }
+
+
+func TestHashUniformity(t *testing.T) {
+    hasher := NewXXH3Hasher()
+    buckets := make([]int, 10)
+    
+    // Probar la distribucion de los hash en 10 buckets
+    for i := 0; i < 10000; i++ {
+        key := fmt.Sprintf("uniform:test:%d", i)
+        hash := hasher.Hash(key)
+        bucket := hash % 10
+        buckets[bucket]++
+    }
+    
+    // Cada bucket deberia tener como un 20% de los hash
+    expected := 1000
+    tolerance := 200
+    
+    for i, count := range buckets {
+        if count < expected-tolerance || count > expected+tolerance {
+            t.Errorf("Bucket %d tiene %d items, se espero %d±%d", i, count, expected, tolerance)
+        }
+    }
+}
+
