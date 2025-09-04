@@ -44,3 +44,21 @@ func TestHashCollision(t *testing.T) {
     }
 }
 
+func TestHashWithSeed(t *testing.T) {
+    hasher := NewXXH3Hasher()
+    key := "test:seed:key"
+    
+    hash1 := hasher.HashWithSeed(key, 0)
+    hash2 := hasher.HashWithSeed(key, 1)
+    hash3 := hasher.HashWithSeed(key, 0) // misma seed
+    
+    // la seed deberia variar el hash producido
+    if hash1 == hash2 {
+        t.Errorf("Una diferente seed deberia provocar un hash diferente")
+    }
+    
+    // misma key y seed deberia tener el mismo hash
+    if hash1 != hash3 {
+        t.Errorf("Hash con misma key y semilla deberia dar igual, no fue deterministico: %d != %d", hash1, hash3)
+    }
+}
