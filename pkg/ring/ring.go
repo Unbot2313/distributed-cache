@@ -8,9 +8,9 @@ import (
 
 // en lugar de nodos se podria implementar un arbol binario pero no encontre diferencias en su Big(O)
 type consistentHash struct {
-	Nodes Nodes
-	Hasher hash.Hasher
-	virtualNodes int // Number of virtual nodes per physical node
+	nodes Nodes
+	hasher hash.Hasher
+	virtualnodes int // Number of virtual nodes per physical node
 }
 
 type Ring interface {
@@ -20,68 +20,68 @@ type Ring interface {
 	getLength() int
 }
 
-func NewRing(Hasher hash.Hasher, VirtualNodes int) Ring {
+func NewRing(Hasher hash.Hasher, Virtualnodes int) Ring {
 	return &consistentHash{
-		Nodes:      Nodes{},
-		Hasher:    Hasher,
-		virtualNodes:  VirtualNodes,
+		nodes:      Nodes{},
+		hasher:    Hasher,
+		virtualnodes:  Virtualnodes,
 	}
 }
 
 func (r *consistentHash) getLength() int{
-	return len(r.Nodes)
+	return len(r.nodes)
 }
 
 func (r *consistentHash) AddNode(id string) {
 
 	// por cada iteracion se guarda un nodo virtual con un hash diferente debido a su virtual id
-	for i := 0; i < r.virtualNodes; i++ {
-		Node := NewVirtualNode(r.Hasher, id, i)
-		r.Nodes = append(r.Nodes, Node)
+	for i := 0; i < r.virtualnodes; i++ {
+		Node := NewVirtualNode(r.hasher, id, i)
+		r.nodes = append(r.nodes, Node)
 	}
 
 	// sort para busqueda binaria al momento de ingresar un registro y buscar el nodo cercano
-	sort.Sort(r.Nodes)
+	sort.Sort(r.nodes)
 }
 
 func (r *consistentHash) GetNode(key string) *Node {
-	hash := r.Hasher.Hash(key)
+	hash := r.hasher.Hash(key)
 	// sort devuelve el valor maximo posible osea 2**32 que es el numero maximo del hash en caso de no encontrar nada
 	idx := sort.Search(r.getLength(), func(i int) bool {
-		return r.Nodes[i].HashId >= hash
+		return r.nodes[i].HashId >= hash
 	})
 	// si no hay un nodo con valor superior para seguir el orden de reloj voy al primero
-	if idx == len(r.Nodes) {
+	if idx == len(r.nodes) {
 		idx = 0
 	}
 
-	return r.Nodes[idx]
+	return r.nodes[idx]
 }
 
 func (r *consistentHash) DeleteNode(id string) error {
-    var newNodes Nodes
+    var newnodes Nodes
     
     // Filtro normal con complejidad O(n)
-    for _, node := range r.Nodes {
+    for _, node := range r.nodes {
         if node.PhysicalId != id {
-            newNodes = append(newNodes, node)
+            newnodes = append(newnodes, node)
         }
     }
     
-    r.Nodes = newNodes
+    r.nodes = newnodes
     return nil
 }
 
 // func (r *consistentHash) DeleteNode(id string) error {
 
 // complejidad O(n*logN)
-// 	for i := 0; i < r.virtualNodes; i++{
+// 	for i := 0; i < r.virtualnodes; i++{
 // 		virtualId := utils.GetVirtualId(id, i)
 // 		hashedVirtualId := r.Hasher.Hash(virtualId)
 // 		idx := sort.Search(r.getLength(), func(i int) bool {
-// 		return r.Nodes[i].HashId == hashedVirtualId
+// 		return r.nodes[i].HashId == hashedVirtualId
 // 	})
-// 		r.Nodes = append(r.Nodes[:idx], r.Nodes[idx+1:]...)
+// 		r.nodes = append(r.nodes[:idx], r.nodes[idx+1:]...)
 // 	}
 // 	return nil
 // }
