@@ -1,9 +1,8 @@
 package ring
 
 import (
-	"fmt"
-
 	"github.com/unbot2313/distributed-cache/pkg/hash"
+	"github.com/unbot2313/distributed-cache/pkg/utils"
 )
 
 type Nodes []*Node
@@ -15,7 +14,7 @@ type Node struct {
 }
 
 func NewVirtualNode(hasher hash.Hasher, physicalId string, virtualIndex int) *Node {
-    virtualId := fmt.Sprintf("%s:%d", physicalId, virtualIndex)
+    virtualId := utils.GetVirtualId(physicalId, virtualIndex)
     return &Node{
         PhysicalId: physicalId,
         VirtualId:  virtualId,
