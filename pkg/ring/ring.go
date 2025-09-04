@@ -17,7 +17,7 @@ type Ring interface {
 	AddNode(Id string)
 	GetNode(Id string) *Node
 	DeleteNode(id string) error
-	redistribute()
+	getLength() int
 }
 
 func NewRing(Hasher hash.Hasher, VirtualNodes int) Ring {
@@ -26,6 +26,10 @@ func NewRing(Hasher hash.Hasher, VirtualNodes int) Ring {
 		Hasher:    Hasher,
 		virtualNodes:  VirtualNodes,
 	}
+}
+
+func (r *consistentHash) getLength() int{
+	return len(r.Nodes)
 }
 
 func (r *consistentHash) AddNode(id string) {
@@ -43,7 +47,7 @@ func (r *consistentHash) AddNode(id string) {
 func (r *consistentHash) GetNode(key string) *Node {
 	hash := r.Hasher.Hash(key)
 	// sort devuelve el valor maximo posible osea 2**32 que es el numero maximo del hash en caso de no encontrar nada
-	idx := sort.Search(len(r.Nodes), func(i int) bool {
+	idx := sort.Search(r.getLength(), func(i int) bool {
 		return r.Nodes[i].HashId >= hash
 	})
 	// si no hay un nodo con valor superior para seguir el orden de reloj voy al primero
@@ -55,12 +59,29 @@ func (r *consistentHash) GetNode(key string) *Node {
 }
 
 func (r *consistentHash) DeleteNode(id string) error {
-
-	// funcion de redistribucion
-	
-
-	
-	return nil
+    var newNodes Nodes
+    
+    // Filtro normal con complejidad O(n)
+    for _, node := range r.Nodes {
+        if node.PhysicalId != id {
+            newNodes = append(newNodes, node)
+        }
+    }
+    
+    r.Nodes = newNodes
+    return nil
 }
 
-func (r *consistentHash) redistribute() {}
+// func (r *consistentHash) DeleteNode(id string) error {
+
+// complejidad O(n*logN)
+// 	for i := 0; i < r.virtualNodes; i++{
+// 		virtualId := utils.GetVirtualId(id, i)
+// 		hashedVirtualId := r.Hasher.Hash(virtualId)
+// 		idx := sort.Search(r.getLength(), func(i int) bool {
+// 		return r.Nodes[i].HashId == hashedVirtualId
+// 	})
+// 		r.Nodes = append(r.Nodes[:idx], r.Nodes[idx+1:]...)
+// 	}
+// 	return nil
+// }
