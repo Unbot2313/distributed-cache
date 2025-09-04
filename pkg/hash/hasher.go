@@ -1,6 +1,8 @@
 package hash
 
-import "github.com/zeebo/xxh3"
+import (
+	"github.com/zeebo/xxh3"
+)
 
 type Hasher interface {
     Hash(key string) uint32
@@ -11,7 +13,7 @@ type Hasher interface {
 type XXH3Hasher struct{}
 
 // Constructor
-func NewXXH3Hasher() *XXH3Hasher {
+func NewXXH3Hasher() Hasher {
     return &XXH3Hasher{}
 }
 
