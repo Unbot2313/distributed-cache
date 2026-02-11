@@ -9,6 +9,14 @@ import (
 	"github.com/unbot2313/distributed-cache/pkg/services"
 )
 
+
+// EL router funciona con un hash map de nodos 
+// de servidores fisicos y los servicios de cada db de cache,
+// de momento slas intancias deben ser pasadas por la configuracion
+// en la instancia del router, pero debe ser migrado a handlers para poder
+// hacerlo dinamico
+
+
 // NodeConfig holds the configuration for a single cache node.
 type NodeConfig struct {
 	ID          string              // PhysicalId used in the ring (e.g., "dragonfly-0")
@@ -23,9 +31,7 @@ type CacheRouter struct {
 	mu       sync.RWMutex
 }
 
-// NewCacheRouter creates a CacheRouter from a Ring and a slice of NodeConfigs.
-// It creates one CacheService per node, adds each node to the ring,
-// and maps PhysicalId -> CacheService.
+// Crea el cache route
 func NewCacheRouter(r ring.Ring, nodes []NodeConfig) (*CacheRouter, error) {
 	svcMap := make(map[string]services.CacheService, len(nodes))
 

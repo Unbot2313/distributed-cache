@@ -22,7 +22,6 @@ func main() {
 	// aprox con 100 nodos tendra una desviacion de 10% como maximo, con 200 un 5%
 	r := ring.NewRing(hasher, 100)
 
-	// Each DragonFly instance is port-forwarded from K8s to localhost
 	// dragonfly-0 -> localhost:6379
 	// dragonfly-1 -> localhost:6380
 	// dragonfly-2 -> localhost:6381
