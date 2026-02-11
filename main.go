@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
+	"github.com/unbot2313/distributed-cache/pkg/logger"
 	"github.com/unbot2313/distributed-cache/pkg/handlers"
 	"github.com/unbot2313/distributed-cache/pkg/hash"
 	"github.com/unbot2313/distributed-cache/pkg/ring"
@@ -17,6 +17,10 @@ import (
 )
 
 func main() {
+
+	// Configurar el logger global
+	logger.Setup()
+
 	hasher := hash.NewXXH3Hasher()
 
 	// aprox con 100 nodos tendra una desviacion de 10% como maximo, con 200 un 5%
