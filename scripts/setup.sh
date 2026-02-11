@@ -9,7 +9,7 @@ else
 fi
 
 echo "=== Deploying DragonFly ==="
-kubectl apply -f pkg/k8s/dragonfly-headless-service.yaml
+kubectl apply -f k8s/dragonfly-headless-service.yaml
 kubectl apply -f k8s/dragonfly-statefulset.yaml
 
 echo "=== Waiting for pods to be ready ==="
