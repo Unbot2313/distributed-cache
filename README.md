@@ -181,11 +181,14 @@ distributed-cache/
 - [x] Basic Ring Operations (Add/Remove/Get)
 - [x] Unit Tests & Benchmarks
 
-### 🚧 Phase 2: Storage Integration (In Progress)
-- [ ] DragonFly Backend Integration
-- [ ] Redis Backend Support
-- [ ] Storage Interface Abstraction
-- [ ] Connection Pooling & Management
+### ✅ Phase 2: Storage Integration
+- [x] DragonFly Backend Integration
+- [x] Redis Backend Support
+- [x] Storage Interface Abstraction
+- [x] Connection Pooling & Management
+- [x] CacheRouter: Ring → CacheService routing layer
+- [x] HTTP REST API (GET/PUT/DELETE /cache/{key}, /health, /ring/info)
+- [x] K8s deployment (StatefulSet + Headless Service + K3d)
 
 ### 📋 Phase 3: Distributed Coordination  
 - [ ] Gossip Protocol Implementation
