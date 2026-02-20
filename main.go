@@ -5,10 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
+	"github.com/unbot2313/distributed-cache/pkg/logger"
 	"github.com/unbot2313/distributed-cache/pkg/handlers"
 	"github.com/unbot2313/distributed-cache/pkg/hash"
 	"github.com/unbot2313/distributed-cache/pkg/ring"
@@ -17,6 +14,10 @@ import (
 )
 
 func main() {
+
+	// Configurar el logger global
+	logger.Setup()
+
 	hasher := hash.NewXXH3Hasher()
 
 	// aprox con 100 nodos tendra una desviacion de 10% como maximo, con 200 un 5%
@@ -74,18 +75,10 @@ func main() {
 	mux := http.NewServeMux()
 	handlers.RegisterCacheHandlers(mux, cr)
 
-	// Graceful shutdown
-	go func() {
-		sigCh := make(chan os.Signal, 1)
-		signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-		<-sigCh
-		fmt.Println("\nShutting down...")
-		cr.Close()
-		os.Exit(0)
-	}()
-
 	// Iniciar servidor HTTP en :3211 con el mux que contiene los handlers
-	addr := ":3211"
+	addrArg := os.Args[1]
+
+	addr := fmt.Sprintf(":%s", addrArg)
 	fmt.Printf("Distributed Cache server listening on %s\n", addr)
 	fmt.Println("Nodes: dragonfly-0 (:6379), dragonfly-1 (:6380), dragonfly-2 (:6381)")
 
