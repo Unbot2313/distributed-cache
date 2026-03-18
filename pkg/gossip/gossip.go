@@ -3,6 +3,7 @@ package gossip
 import (
     "log/slog"
     "math/rand/v2"
+	"strings"
 	"sync"
 	"net"
 	"fmt"
@@ -21,6 +22,7 @@ type Gossip interface {
 	StartListener(port string)
 	StartGossiping(interval time.Duration)
 	UpdateNodesList(nodesList NodesList)
+	SetSeedNodes(seeds string)
 	SendNodesList(nodesList NodesList)
 	UpdateHeartbeatCounter()
 }
@@ -28,11 +30,18 @@ type Gossip interface {
 func NewGossip(selfID string, transport GossipCommunicationService) Gossip {
 	// Initialize the nodes list with the self node
 	// TODO: agregar el transport address del nodo actual al nodes list
+	//FIX EL LOCALHOST ESTA QUEMADO
+	//FIX EL LOCALHOST ESTA QUEMADO
+	//FIX EL LOCALHOST ESTA QUEMADO
+	//FIX EL LOCALHOST ESTA QUEMADO
+	//FIX EL LOCALHOST ESTA QUEMADO
+	//FIX EL LOCALHOST ESTA QUEMADO
+
 	NodesMap := make(map[string]NodesAttr)
 	NodesMap[selfID] = NodesAttr{
 		HeartbeatCounter: 0,
 		Timestamp:        time.Now().Unix(),
-		TransportAddress: "",
+		TransportAddress: selfID,
 	}
 	return &gossipImp{
 		selfID: selfID,
@@ -104,6 +113,25 @@ func (g *gossipImp) UpdateNodesList(nodesList NodesList) {
 			g.nodesList[key] = nodesList[key]
 		}
 	}
+}
+
+func(g *gossipImp) SetSeedNodes(seeds string) {
+	if seeds == "" {
+		return
+	}
+
+	g.m.Lock()
+	defer g.m.Unlock()
+
+	seedsList := strings.Split(seeds, ",")
+	for _, seed := range seedsList {
+		g.nodesList[seed] = NodesAttr{
+			HeartbeatCounter: 0,
+			Timestamp:        time.Now().Unix(),
+			TransportAddress: seed,
+		}
+	}
+
 }
 
 func (g *gossipImp) SendNodesList(nodesList NodesList) {
